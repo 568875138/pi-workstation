@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=<SECRET_PASSWORD>
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  web:
+    image: matrixdotorg/synapse
+    restart: always
+    ports:
+      - "127.0.0.1:3003:8008"
+    depends_on:
+      - db
+    links:
+      - db:db
+    volumes:
+      - synapse:/data
+
+volumes:
+  synapse:
+  postgres:

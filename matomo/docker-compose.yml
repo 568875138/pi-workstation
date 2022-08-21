@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: <SECRET_PASSWORD>
+      MYSQL_USER: matomo
+      MYSQL_PASSWORD: <SECRET_PASSWORD>
+      MYSQL_DATABASE: matomo
+    volumes:
+      - mariadb:/var/lib/mysql
+  web:
+    image: matomo
+    restart: always
+    environment:
+      MATOMO_DATABASE_HOST: db
+      MATOMO_DATABASE_USERNAME: matomo
+      MATOMO_DATABASE_PASSWORD: <SECRET_PASSWORD>
+      MATOMO_DATABASE_DBNAME: matomo
+    ports:
+      - "127.0.0.1:3004:80"
+    depends_on:
+      - db
+    links:
+      - db:db
+    volumes:
+      - matomo:/var/www/html
+
+volumes:
+  matomo:
+  mariadb:

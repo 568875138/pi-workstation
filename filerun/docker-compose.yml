@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: <SECRET_PASSWORD>
+      MYSQL_USER: filerun
+      MYSQL_PASSWORD: <SECRET_PASSWORD>
+      MYSQL_DATABASE: filerun
+    volumes:
+      - mariadb:/var/lib/mysql
+  web:
+    image: filerun/filerun:arm64v8
+    restart: always
+    environment:
+      FR_DB_HOST: db
+      FR_DB_PORT: 3306
+      FR_DB_NAME: filerun
+      FR_DB_USER: filerun
+      FR_DB_PASS: <SECRET_PASSWORD>
+      APACHE_RUN_USER: www-data
+      APACHE_RUN_USER_ID: 33
+      APACHE_RUN_GROUP: www-data
+      APACHE_RUN_GROUP_ID: 33
+    ports:
+      - "127.0.0.1:3006:80"
+    depends_on:
+      - db
+    links:
+      - db:db
+    volumes:
+      - filerun:/var/www/html
+      - filerun-files:/user-files
+
+volumes:
+  filerun:
+  filerun-files:
+  mariadb:
